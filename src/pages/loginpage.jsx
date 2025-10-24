@@ -57,7 +57,7 @@ export default function Login() {
             <span className="text-2xl">📊</span>
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-          <p className="text-gray-300">Sign in to your CLONOS account</p>
+          <p className="text-gray-300">Sign in to your VIZIONIX account</p>
         </div>
 
         {error && (

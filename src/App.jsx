@@ -217,7 +217,7 @@ function DashboardPage() {
               <div className="flex items-center justify-center min-h-[60vh] text-white px-6">
                 <div className="text-center max-w-2xl">
                   <div className="text-6xl mb-4">🏭</div>
-                  <h2 className="text-3xl font-bold mb-4">CLONOS Asset Dashboard Builder</h2>
+                  <h2 className="text-3xl font-bold mb-4">VIZIONIX Asset Dashboard Builder</h2>
                   <p className="text-gray-400 mb-6">
                     Build powerful asset lifecycle management dashboards without coding.
                     Choose from pre-built templates or create custom charts for your assets.

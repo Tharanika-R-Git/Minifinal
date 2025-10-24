@@ -25,7 +25,7 @@ const Landing = () => {
 
         {/* Main heading */}
         <h1 className="text-6xl md:text-7xl font-bold mb-6 text-center bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
-          CLONOS Platform
+          VIZIONIX Platform
         </h1>
         
         {/* Subtitle */}
