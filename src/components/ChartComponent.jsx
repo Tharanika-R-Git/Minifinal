@@ -14,7 +14,7 @@ import {
   Filler
 } from 'chart.js';
 import { Bar, Line, Pie, Doughnut, Radar, Scatter } from 'react-chartjs-2';
-import { ChartData } from '../types/dashboard';
+import PropTypes from 'prop-types';
 
 ChartJS.register(
   CategoryScale,
@@ -30,23 +30,13 @@ ChartJS.register(
   Filler
 );
 
-interface ChartComponentProps {
-  chartData: ChartData;
-  onSelect?: () => void;
-  isSelected?: boolean;
-}
-
-export const ChartComponent: React.FC<ChartComponentProps> = ({ 
-  chartData, 
-  onSelect, 
-  isSelected = false 
-}) => {
+export const ChartComponent = ({ chartData, onSelect, isSelected = false }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: 'top',
         labels: {
           color: '#E5E7EB',
           font: {
@@ -60,28 +50,33 @@ export const ChartComponent: React.FC<ChartComponentProps> = ({
         color: '#F9FAFB',
         font: {
           size: 16,
-          weight: 'bold' as const
+          weight: 'bold'
         }
       }
     },
-    scales: chartData.type !== 'pie' && chartData.type !== 'doughnut' && chartData.type !== 'radar' ? {
-      x: {
-        ticks: {
-          color: '#9CA3AF'
-        },
-        grid: {
-          color: '#374151'
-        }
-      },
-      y: {
-        ticks: {
-          color: '#9CA3AF'
-        },
-        grid: {
-          color: '#374151'
-        }
-      }
-    } : undefined,
+    scales:
+      chartData.type !== 'pie' &&
+      chartData.type !== 'doughnut' &&
+      chartData.type !== 'radar'
+        ? {
+            x: {
+              ticks: {
+                color: '#9CA3AF'
+              },
+              grid: {
+                color: '#374151'
+              }
+            },
+            y: {
+              ticks: {
+                color: '#9CA3AF'
+              },
+              grid: {
+                color: '#374151'
+              }
+            }
+          }
+        : undefined,
     onClick: onSelect
   };
 
@@ -110,7 +105,7 @@ export const ChartComponent: React.FC<ChartComponentProps> = ({
   };
 
   return (
-    <div 
+    <div
       className={`w-full h-full bg-gray-800 rounded-lg p-4 cursor-pointer transition-all duration-200 ${
         isSelected ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:shadow-md'
       }`}
@@ -119,4 +114,15 @@ export const ChartComponent: React.FC<ChartComponentProps> = ({
       {renderChart()}
     </div>
   );
+};
+
+ChartComponent.propTypes = {
+  chartData: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    labels: PropTypes.array.isRequired,
+    datasets: PropTypes.array.isRequired
+  }).isRequired,
+  onSelect: PropTypes.func,
+  isSelected: PropTypes.bool
 };

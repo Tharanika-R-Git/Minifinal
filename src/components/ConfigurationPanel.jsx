@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, Upload, Palette, BarChart } from 'lucide-react';
-import { ChartData } from '../types/dashboard';
+import PropTypes from 'prop-types';
 import { COLOR_THEMES, getThemeColors } from '../utils/colorThemes';
 import { parseCSVData, generateSampleData } from '../utils/chartHelpers';
 
-interface ConfigurationPanelProps {
-  chartData: ChartData | null;
-  onUpdate: (chartData: ChartData) => void;
-  onClose: () => void;
-}
-
-export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
-  chartData,
-  onUpdate,
-  onClose
-}) => {
-  const [formData, setFormData] = useState<ChartData | null>(null);
+export const ConfigurationPanel = ({ chartData, onUpdate, onClose }) => {
+  const [formData, setFormData] = useState(null);
   const [csvInput, setCsvInput] = useState('');
 
   useEffect(() => {
@@ -26,35 +16,35 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
 
   if (!formData) return null;
 
-  const handleInputChange = (field: keyof ChartData, value: any) => {
+  const handleInputChange = (field, value) => {
     const updated = { ...formData, [field]: value };
     setFormData(updated);
     onUpdate(updated);
   };
 
-  const handleDatasetChange = (index: number, field: string, value: any) => {
+  const handleDatasetChange = (index, field, value) => {
     const updated = { ...formData };
     updated.datasets[index] = { ...updated.datasets[index], [field]: value };
     setFormData(updated);
     onUpdate(updated);
   };
 
-  const handleLabelsChange = (value: string) => {
+  const handleLabelsChange = (value) => {
     const labels = value.split(',').map(label => label.trim()).filter(label => label);
     handleInputChange('labels', labels);
   };
 
-  const handleDataChange = (datasetIndex: number, value: string) => {
+  const handleDataChange = (datasetIndex, value) => {
     const data = value.split(',').map(val => parseFloat(val.trim())).filter(val => !isNaN(val));
     handleDatasetChange(datasetIndex, 'data', data);
   };
 
-  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCSVUpload = (event) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const text = e.target?.result as string;
+        const text = e.target?.result;
         const parsedData = parseCSVData(text);
         if (parsedData) {
           handleInputChange('labels', parsedData.labels);
@@ -65,7 +55,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
     }
   };
 
-  const handleCSVTextChange = (value: string) => {
+  const handleCSVTextChange = (value) => {
     setCsvInput(value);
     const parsedData = parseCSVData(value);
     if (parsedData) {
@@ -74,17 +64,17 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
     }
   };
 
-  const applyColorTheme = (themeName: string) => {
+  const applyColorTheme = (themeName) => {
     const updated = { ...formData };
     const colors = getThemeColors(themeName, formData.labels.length);
-    
+
     updated.colorTheme = themeName;
     updated.datasets = updated.datasets.map(dataset => ({
       ...dataset,
       backgroundColor: formData.type === 'pie' || formData.type === 'doughnut' ? colors : colors[0],
       borderColor: colors[0]
     }));
-    
+
     setFormData(updated);
     onUpdate(updated);
   };
@@ -137,7 +127,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
             </label>
             <select
               value={formData.type}
-              onChange={(e) => handleInputChange('type', e.target.value as ChartData['type'])}
+              onChange={(e) => handleInputChange('type', e.target.value)}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
             >
               <option value="bar">Bar Chart</option>
@@ -167,7 +157,6 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
           {formData.datasets.map((dataset, index) => (
             <div key={index} className="border border-gray-700 rounded-lg p-4">
               <h4 className="text-sm font-medium text-gray-300 mb-3">Dataset {index + 1}</h4>
-              
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs text-gray-400 mb-1">Label</label>
@@ -178,7 +167,6 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                     className="w-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm focus:border-blue-500 focus:outline-none"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-xs text-gray-400 mb-1">Data (comma-separated)</label>
                   <input
@@ -199,7 +187,6 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
               <Upload className="w-4 h-4" />
               Import Data
             </h4>
-            
             <div className="space-y-3">
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Upload CSV File</label>
@@ -210,7 +197,6 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                   className="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
                 />
               </div>
-              
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Or paste CSV data</label>
                 <textarea
@@ -269,4 +255,10 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
       </div>
     </div>
   );
+};
+
+ConfigurationPanel.propTypes = {
+  chartData: PropTypes.object,
+  onUpdate: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired
 };

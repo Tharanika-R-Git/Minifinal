@@ -1,25 +1,13 @@
 import React from 'react';
-import { Responsive, WidthProvider, Layout } from 'react-grid-layout';
+import { Responsive, WidthProvider } from 'react-grid-layout';
 import { ChartComponent } from './ChartComponent';
-import { DashboardItem } from '../types/dashboard';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import PropTypes from 'prop-types';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-interface DashboardGridProps {
-  items: DashboardItem[];
-  onLayoutChange: (layout: Layout[]) => void;
-  onItemSelect: (itemId: string) => void;
-  selectedItemId: string | null;
-}
-
-export const DashboardGrid: React.FC<DashboardGridProps> = ({
-  items,
-  onLayoutChange,
-  onItemSelect,
-  selectedItemId
-}) => {
+export const DashboardGrid = ({ items, onLayoutChange, onItemSelect, selectedItemId }) => {
   const layouts = {
     lg: items.map(item => ({
       i: item.i,
@@ -44,7 +32,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         margin={[16, 16]}
         containerPadding={[16, 16]}
       >
-        {items.map((item) => (
+        {items.map(item => (
           <div key={item.i} className="grid-item">
             <ChartComponent
               chartData={item.chartData}
@@ -56,4 +44,20 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
       </ResponsiveGridLayout>
     </div>
   );
+};
+
+DashboardGrid.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      i: PropTypes.string.isRequired,
+      x: PropTypes.number.isRequired,
+      y: PropTypes.number.isRequired,
+      w: PropTypes.number.isRequired,
+      h: PropTypes.number.isRequired,
+      chartData: PropTypes.object.isRequired
+    })
+  ).isRequired,
+  onLayoutChange: PropTypes.func.isRequired,
+  onItemSelect: PropTypes.func.isRequired,
+  selectedItemId: PropTypes.string
 };

@@ -1,21 +1,17 @@
 import React from 'react';
 import { BarChart3, LineChart, PieChart, Donut as Doughnut, Radar, ScatterChart } from 'lucide-react';
-import { ChartData } from '../types/dashboard';
-
-interface ChartTypeSelectorProps {
-  onSelectType: (type: ChartData['type']) => void;
-}
+import PropTypes from 'prop-types';
 
 const chartTypes = [
-  { type: 'bar' as const, icon: BarChart3, label: 'Bar Chart', color: 'text-blue-400' },
-  { type: 'line' as const, icon: LineChart, label: 'Line Chart', color: 'text-green-400' },
-  { type: 'pie' as const, icon: PieChart, label: 'Pie Chart', color: 'text-purple-400' },
-  { type: 'doughnut' as const, icon: Doughnut, label: 'Doughnut', color: 'text-pink-400' },
-  { type: 'radar' as const, icon: Radar, label: 'Radar Chart', color: 'text-yellow-400' },
-  { type: 'scatter' as const, icon: ScatterChart, label: 'Scatter Plot', color: 'text-red-400' }
+  { type: 'bar', icon: BarChart3, label: 'Bar Chart', color: 'text-blue-400' },
+  { type: 'line', icon: LineChart, label: 'Line Chart', color: 'text-green-400' },
+  { type: 'pie', icon: PieChart, label: 'Pie Chart', color: 'text-purple-400' },
+  { type: 'doughnut', icon: Doughnut, label: 'Doughnut', color: 'text-pink-400' },
+  { type: 'radar', icon: Radar, label: 'Radar Chart', color: 'text-yellow-400' },
+  { type: 'scatter', icon: ScatterChart, label: 'Scatter Plot', color: 'text-red-400' }
 ];
 
-export const ChartTypeSelector: React.FC<ChartTypeSelectorProps> = ({ onSelectType }) => {
+export const ChartTypeSelector = ({ onSelectType }) => {
   return (
     <div className="bg-gray-800 rounded-lg p-4">
       <h3 className="text-lg font-semibold text-white mb-4">Chart Types</h3>
@@ -33,4 +29,8 @@ export const ChartTypeSelector: React.FC<ChartTypeSelectorProps> = ({ onSelectTy
       </div>
     </div>
   );
+};
+
+ChartTypeSelector.propTypes = {
+  onSelectType: PropTypes.func.isRequired
 };

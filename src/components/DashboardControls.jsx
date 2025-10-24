@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
-import { Save, FolderOpen, Download, Plus, Trash2 } from 'lucide-react';
-import { Dashboard } from '../types/dashboard';
+import { Save, FolderOpen, Download, Plus, Trash2, User, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-interface DashboardControlsProps {
-  dashboard: Dashboard;
-  onSave: (name: string) => void;
-  onLoad: (dashboard: Dashboard) => void;
-  onClear: () => void;
-  onExport: () => void;
-}
-
-export const DashboardControls: React.FC<DashboardControlsProps> = ({
-  dashboard,
-  onSave,
-  onLoad,
-  onClear,
-  onExport
-}) => {
+export const DashboardControls = ({ dashboard, onSave, onLoad, onClear, onExport }) => {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [dashboardName, setDashboardName] = useState(dashboard.name);
+  const [dashboardName, setDashboardName] = useState(dashboard.name || '');
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   const handleSave = () => {
     if (dashboardName.trim()) {
@@ -27,13 +23,13 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
     }
   };
 
-  const handleLoad = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLoad = (event) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const loadedDashboard = JSON.parse(e.target?.result as string);
+          const loadedDashboard = JSON.parse(e.target?.result);
           onLoad(loadedDashboard);
         } catch (error) {
           alert('Invalid dashboard file');
@@ -56,6 +52,32 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
       </div>
 
       <div className="flex items-center space-x-2">
+        {/* User Menu */}
+        <div className="relative">
+          <button
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
+          >
+            <User className="w-4 h-4" />
+            <span className="hidden sm:inline">{user.name || 'User'}</span>
+          </button>
+          
+          {showUserMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+              <div className="p-3 border-b border-gray-700">
+                <p className="text-white font-medium">{user.name}</p>
+                <p className="text-gray-400 text-sm">{user.email}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-3 py-2 text-red-400 hover:bg-gray-700 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
         <button
           onClick={() => setShowSaveDialog(true)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
@@ -124,4 +146,14 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
       )}
     </div>
   );
+};
+
+DashboardControls.propTypes = {
+  dashboard: PropTypes.shape({
+    name: PropTypes.string
+  }).isRequired,
+  onSave: PropTypes.func.isRequired,
+  onLoad: PropTypes.func.isRequired,
+  onClear: PropTypes.func.isRequired,
+  onExport: PropTypes.func.isRequired
 };
